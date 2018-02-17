@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="YourProject" default="build" basedir=".">
-    <target name="build" depends="composer,phpunit" description=""/>
+    <property name="phpunit" value="./vendor/bin/phpunit"/>
+
+    <target name="build" depends="prepare,composer,phpunit" description=""/>
     <target name="composer" description="Installing composer dependencies">
         <exec executable="composer" failonerror="true">
             <arg value="install" />
@@ -8,5 +10,18 @@
             <arg value="--prefer-dist" />
             <arg value="--no-progress" />
         </exec>
+    </target>
+
+    <target name="phpunit"
+            unless="phpunit.done"
+            depends="prepare"
+         description="Run unit tests with PHPUnit (without generating code coverage reports)">
+        <exec executable="${phpunit}" failonerror="true" taskname="phpunit">
+            <arg value="--configuration"/>
+            <arg path="${basedir}/build/phpunit.xml"/>
+            <arg value="--no-coverage"/>
+        </exec>
+
+        <property name="phpunit.done" value="true"/>
     </target>
 </project>
